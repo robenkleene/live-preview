@@ -1,0 +1,14 @@
+{
+  "name": "live-preview",
+  "main": "./lib/live-preview",
+  "version": "0.0.0",
+  "description": "A short description of your package",
+  "activationEvents": ["live-preview:toggle"],
+  "repository": "https://github.com/atom/live-preview",
+  "license": "MIT",
+  "engines": {
+    "atom": ">0.50.0"
+  },
+  "dependencies": {
+  }
+}
