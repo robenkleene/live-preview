@@ -74,7 +74,7 @@ class LivePreview
 
     atom.workspace.open(uri, split: 'right', searchAllPanes: true).done (previewView) ->
       if isPreviewView(previewView)
-        previewView.renderPreview()
+        previewView.render()
         previousActivePane.activate()
 
   @getPackageName: ->

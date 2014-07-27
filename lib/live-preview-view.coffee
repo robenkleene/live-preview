@@ -32,7 +32,7 @@ class LivePreviewView extends ScrollView
     else
       @subscribe atom.packages.once 'activated', =>
         resolve()
-        @renderPreview()
+        @render()
 
   editorForId: (editorId) ->
     for editor in atom.workspace.getEditors()
@@ -44,7 +44,7 @@ class LivePreviewView extends ScrollView
     @subscribe this, 'core:move-down', => @scrollDown()
 
     changeHandler = =>
-      @renderPreview()
+      @render()
       pane = atom.workspace.paneForUri(@getUri())
       if pane? and pane isnt atom.workspace.getActivePane()
         pane.activateItem(this)
@@ -56,7 +56,7 @@ class LivePreviewView extends ScrollView
       @subscribe @editor.getBuffer(), 'reloaded saved', =>
         changeHandler() unless atom.config.get 'live-preview.liveUpdate'
 
-  renderPreview: ->
+  render: ->
     console.log "Rendering"
 
   getTitle: ->
