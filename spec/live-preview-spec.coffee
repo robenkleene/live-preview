@@ -19,6 +19,8 @@ describe "Live preview package", ->
       atom.packages.activatePackage("live-preview")
 
   describe "when a preview has not been created for the file", ->
+    beforeEach ->
+      atom.workspaceView.attachToDom() # `toHaveFocus()` test fails without this
 
     it "splits the current pane to the right with a preview for the file", ->
       waitsForPromise ->
@@ -32,4 +34,9 @@ describe "Live preview package", ->
 
       runs ->
         expect(atom.workspaceView.getPaneViews()).toHaveLength 2
-        console.log "Got here"
+        [editorPane, previewPane] = atom.workspaceView.getPaneViews()
+        expect(editorPane.items).toHaveLength 1
+        preview = previewPane.getActiveItem()
+        expect(preview).toBeInstanceOf(LivePreviewView)
+        expect(preview.getPath()).toBe atom.workspace.getActivePaneItem().getPath()
+        expect(editorPane).toHaveFocus()
