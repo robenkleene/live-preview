@@ -82,3 +82,45 @@ describe "Live preview package", ->
           expect(preview).toBeInstanceOf(LivePreviewView)
           expect(preview.getPath()).toBe atom.workspace.getActivePaneItem().getPath()
           expect(editorPane).toHaveFocus()
+
+    describe "when the path contains a space", ->
+      it "renders the preview", ->
+        waitsForPromise ->
+          atom.workspace.open("file with space.md")
+
+        runs ->
+          atom.workspaceView.getActiveView().trigger 'live-preview:toggle'
+
+        waitsFor ->
+          LivePreviewView::render.callCount > 0
+
+        runs ->
+          expect(atom.workspaceView.getPaneViews()).toHaveLength 2
+          [editorPane, previewPane] = atom.workspaceView.getPaneViews()
+
+          expect(editorPane.items).toHaveLength 1
+          preview = previewPane.getActiveItem()
+          expect(preview).toBeInstanceOf(LivePreviewView)
+          expect(preview.getPath()).toBe atom.workspace.getActivePaneItem().getPath()
+          expect(editorPane).toHaveFocus()
+
+    describe "when the path contains accented characters", ->
+      it "renders the preview", ->
+        waitsForPromise ->
+          atom.workspace.open("áccéntéd.md")
+
+        runs ->
+          atom.workspaceView.getActiveView().trigger 'live-preview:toggle'
+
+        waitsFor ->
+          LivePreviewView::render.callCount > 0
+
+        runs ->
+          expect(atom.workspaceView.getPaneViews()).toHaveLength 2
+          [editorPane, previewPane] = atom.workspaceView.getPaneViews()
+
+          expect(editorPane.items).toHaveLength 1
+          preview = previewPane.getActiveItem()
+          expect(preview).toBeInstanceOf(LivePreviewView)
+          expect(preview.getPath()).toBe atom.workspace.getActivePaneItem().getPath()
+          expect(editorPane).toHaveFocus()
