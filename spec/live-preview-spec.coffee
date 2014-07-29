@@ -61,3 +61,24 @@ describe "Live preview package", ->
           expect(preview).toBeInstanceOf(LivePreviewView)
           expect(preview.getPath()).toBe atom.workspace.getActivePaneItem().getPath()
           expect(editorPane).toHaveFocus()
+
+    describe "when the editor does not have a path", ->
+      it "splits the current pane to the right with a preview for the file", ->
+        waitsForPromise ->
+          atom.workspace.open("")
+
+        runs ->
+          atom.workspaceView.getActiveView().trigger 'live-preview:toggle'
+
+        waitsFor ->
+          LivePreviewView::render.callCount > 0
+
+        runs ->
+          expect(atom.workspaceView.getPaneViews()).toHaveLength 2
+          [editorPane, previewPane] = atom.workspaceView.getPaneViews()
+
+          expect(editorPane.items).toHaveLength 1
+          preview = previewPane.getActiveItem()
+          expect(preview).toBeInstanceOf(LivePreviewView)
+          expect(preview.getPath()).toBe atom.workspace.getActivePaneItem().getPath()
+          expect(editorPane).toHaveFocus()
