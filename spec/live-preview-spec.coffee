@@ -24,7 +24,7 @@ describe "Live preview package", ->
 
     it "splits the current pane to the right with a preview for the file", ->
       waitsForPromise ->
-        atom.workspace.open("example.coffee")
+        atom.workspace.open("subdir/file.markdown")
 
       runs ->
         atom.workspaceView.getActiveView().trigger 'live-preview:toggle'
@@ -86,7 +86,7 @@ describe "Live preview package", ->
     describe "when the path contains a space", ->
       it "renders the preview", ->
         waitsForPromise ->
-          atom.workspace.open("file with space.md")
+          atom.workspace.open("subdir/file with space.md")
 
         runs ->
           atom.workspaceView.getActiveView().trigger 'live-preview:toggle'
@@ -107,7 +107,7 @@ describe "Live preview package", ->
     describe "when the path contains accented characters", ->
       it "renders the preview", ->
         waitsForPromise ->
-          atom.workspace.open("áccéntéd.md")
+          atom.workspace.open("subdir/áccéntéd.md")
 
         runs ->
           atom.workspaceView.getActiveView().trigger 'live-preview:toggle'
