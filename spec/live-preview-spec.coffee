@@ -124,3 +124,37 @@ describe "Live preview package", ->
           expect(preview).toBeInstanceOf(LivePreviewView)
           expect(preview.getPath()).toBe atom.workspace.getActivePaneItem().getPath()
           expect(editorPane).toHaveFocus()
+
+  describe "when a preview has been created for the file", ->
+    [editorPane, previewPane, preview] = []
+
+    beforeEach ->
+      atom.workspaceView.attachToDom()
+
+      waitsForPromise ->
+        atom.workspace.open("subdir/file.markdown")
+
+      runs ->
+        atom.workspaceView.getActiveView().trigger 'live-preview:toggle'
+
+      waitsFor ->
+        LivePreviewView::render.callCount > 0
+
+      runs ->
+        [editorPane, previewPane] = atom.workspaceView.getPaneViews()
+        preview = previewPane.getActiveItem()
+        LivePreviewView::render.reset()
+
+    it "closes the existing preview when toggle is triggered a second time on the editor", ->
+      atom.workspaceView.getActiveView().trigger 'live-preview:toggle'
+
+      [editorPane, previewPane] = atom.workspaceView.getPaneViews()
+      expect(editorPane).toHaveFocus()
+      expect(previewPane?.activeItem).toBeUndefined()
+
+    it "closes the existing preview when toggle is triggered on it and it has focus", ->
+      previewPane.focus()
+      atom.workspaceView.getActiveView().trigger 'live-preview:toggle'
+
+      [editorPane, previewPane] = atom.workspaceView.getPaneViews()
+      expect(previewPane?.activeItem).toBeUndefined()
