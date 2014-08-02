@@ -243,3 +243,26 @@ describe "Live preview package", ->
 
       waitsFor ->
         titleChangedCallback.callCount is 1
+
+  describe "sanitization", ->
+    it "removes script tags and attributes that commonly contain inline scripts", ->
+      waitsForPromise ->
+        atom.workspace.open("subdir/evil.md")
+
+      runs ->
+        atom.workspaceView.getActiveView().trigger 'live-preview:toggle'
+
+      waitsFor ->
+        LivePreviewView::render.callCount > 0
+
+      runs ->
+        [editorPane, previewPane] = atom.workspaceView.getPaneViews()
+        preview = previewPane.getActiveItem()
+        expect(preview[0].innerHTML).toBe """
+          <div><pre><code>hello
+
+
+          <img>
+          world
+          </code></pre></div>
+        """
