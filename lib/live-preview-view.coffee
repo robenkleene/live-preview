@@ -8,6 +8,7 @@ class LivePreviewView extends ScrollView
   constructor: (@editorId) ->
     super
     @resolveEditor(@editorId)
+    @resolveRenderer()
 
   serialize: ->
     {@editorId, deserializer: @constructor.name}
@@ -50,14 +51,24 @@ class LivePreviewView extends ScrollView
         pane.activateItem(this)
 
     if @editor?
-      @subscribe @editor.getBuffer(), 'contents-modified', =>
+      @subscribe @editor.getBuffer(), 'contents-modified', ->
         changeHandler() if atom.config.get 'live-preview.liveUpdate'
       @subscribe @editor, 'path-changed', => @trigger 'title-changed'
-      @subscribe @editor.getBuffer(), 'reloaded saved', =>
+      @subscribe @editor.getBuffer(), 'reloaded saved', ->
         changeHandler() unless atom.config.get 'live-preview.liveUpdate'
 
   render: ->
-    console.log "Rendering"
+    # @showLoading()
+    if @editor?
+      @renderText(@editor.getText())
+
+  renderText: (text) ->
+    @renderer.toHtml text, (error, html) =>
+      if error
+        @showError(error)
+      else
+        @loading = false
+        @html(html)
 
   getTitle: ->
     if @editor?
@@ -73,3 +84,6 @@ class LivePreviewView extends ScrollView
 
   getPath: ->
     @editor.getPath()
+
+  resolveRenderer: =>
+    @renderer = require './renderer'
