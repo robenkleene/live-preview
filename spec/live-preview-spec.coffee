@@ -266,3 +266,22 @@ describe "Live preview package", ->
           world
           </code></pre></div>
         """
+
+  describe "when the markdown contains an <html> tag", ->
+    it "does not throw an exception", ->
+      waitsForPromise ->
+        atom.workspace.open("subdir/html-tag.md")
+
+      runs ->
+        atom.workspaceView.getActiveView().trigger 'live-preview:toggle'
+
+      waitsFor ->
+        LivePreviewView::render.callCount > 0
+
+      runs ->
+        [editorPane, previewPane] = atom.workspaceView.getPaneViews()
+        preview = previewPane.getActiveItem()
+        expect(preview[0].innerHTML).toBe """
+          <div><pre><code>content
+          </code></pre></div>
+        """
