@@ -2,6 +2,7 @@
 path = require 'path'
 temp = require 'temp'
 wrench = require 'wrench'
+fs = require 'fs-plus'
 LivePreviewView = require '../lib/live-preview-view'
 
 describe "Live preview package", ->
@@ -200,3 +201,45 @@ describe "Live preview package", ->
           runs ->
             expect(editorPane).toHaveFocus()
             expect(previewPane.getActiveItem()).toBe preview
+
+      describe "when the liveUpdate config is set to false", ->
+        it "only re-renders the markdown when the editor is saved, not when the contents are modified", ->
+          atom.config.set 'live-preview.liveUpdate', false
+
+          contentsModifiedHandler = jasmine.createSpy('contents-modified')
+          atom.workspace.getActiveEditor().getBuffer().on 'contents-modified', contentsModifiedHandler
+          atom.workspace.getActiveEditor().setText('ch ch changes')
+
+          waitsFor ->
+            contentsModifiedHandler.callCount > 0
+
+          runs ->
+            expect(LivePreviewView::render.callCount).toBe 0
+            atom.workspace.getActiveEditor().save()
+            expect(LivePreviewView::render.callCount).toBe 1
+
+  describe "when the editor's path changes", ->
+    it "updates the preview's title", ->
+      titleChangedCallback = jasmine.createSpy('titleChangedCallback')
+
+      waitsForPromise ->
+        atom.workspace.open("subdir/file.markdown")
+
+      runs ->
+        atom.workspaceView.getActiveView().trigger 'live-preview:toggle'
+
+      waitsFor ->
+        LivePreviewView::render.callCount > 0
+
+      runs ->
+        [editorPane, previewPane] = atom.workspaceView.getPaneViews()
+        preview = previewPane.getActiveItem()
+        expect(preview.getTitle()).toBe 'file.markdown Preview'
+
+        titleChangedCallback.reset()
+        preview.one('title-changed', titleChangedCallback)
+        newPath = path.join(path.dirname(atom.workspace.getActiveEditor().getPath()), 'file2.md')
+        fs.renameSync(atom.workspace.getActiveEditor().getPath(), newPath)
+
+      waitsFor ->
+        titleChangedCallback.callCount is 1

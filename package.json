@@ -12,6 +12,7 @@
   },
   "devDependencies": {
     "temp": "0.6.x",
+    "fs-plus": "2.x",
     "wrench": "1.5.x"
   }
 
