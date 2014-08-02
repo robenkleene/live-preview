@@ -10,6 +10,7 @@ describe "Live preview package", ->
     tempPath = temp.mkdirSync('atom')
     wrench.copyDirSyncRecursive(fixturesPath, tempPath, forceDelete: true)
     atom.project.setPath(tempPath)
+    jasmine.unspy(window, 'setTimeout') # Prevent tests that modify the editor form timing out
 
     atom.workspaceView = new WorkspaceView
     atom.workspace = atom.workspaceView.model
@@ -158,3 +159,44 @@ describe "Live preview package", ->
 
       [editorPane, previewPane] = atom.workspaceView.getPaneViews()
       expect(previewPane?.activeItem).toBeUndefined()
+
+    describe "when the editor is modified", ->
+      describe "when the preview is in the active pane but is not the active item", ->
+        it "re-renders the preview but does not make it active", ->
+          editor = atom.workspace.getActiveEditor()
+          previewPane.focus()
+
+          waitsForPromise ->
+            atom.workspace.open()
+
+          runs ->
+            LivePreviewView::render.reset()
+            console.log "Waiting for render"
+            editor.setText("Hey!")
+
+          waitsFor ->
+            LivePreviewView::render.callCount > 0
+
+          runs ->
+            expect(previewPane).toHaveFocus()
+            expect(previewPane.getActiveItem()).not.toBe preview
+
+      describe "when the preview is not the active item and not in the active pane", ->
+        it "re-renders the preview and makes it active", ->
+          editor = atom.workspace.getActiveEditor()
+          previewPane.focus()
+
+          waitsForPromise ->
+            atom.workspace.open()
+
+          runs ->
+            LivePreviewView::render.reset()
+            editorPane.focus()
+            editor.setText("Hey!")
+
+          waitsFor ->
+            LivePreviewView::render.callCount > 0
+
+          runs ->
+            expect(editorPane).toHaveFocus()
+            expect(previewPane.getActiveItem()).toBe preview
