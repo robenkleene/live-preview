@@ -1,4 +1,4 @@
-{ScrollView} = require 'atom'
+{$$$, ScrollView} = require 'atom'
 
 module.exports =
 class LivePreviewView extends ScrollView
@@ -7,8 +7,8 @@ class LivePreviewView extends ScrollView
 
   constructor: (@editorId) ->
     super
-    @resolveEditor(@editorId)
     @resolveRenderer()
+    @resolveEditor(@editorId)
 
   serialize: ->
     {@editorId, deserializer: @constructor.name}
@@ -58,17 +58,30 @@ class LivePreviewView extends ScrollView
         changeHandler() unless atom.config.get 'live-preview.liveUpdate'
 
   render: ->
-    # @showLoading()
+    @showLoading()
     if @editor?
       @renderText(@editor.getText())
 
   renderText: (text) ->
     @renderer.toHtml text, (error, html) =>
       if error
-        @showError(error)
+        # @showError(error)
       else
-        @loading = false
+        # @loading = false
         @html(html)
+
+  # showError: (result) ->
+  #   failureMessage = result?.message
+  #
+  #   @html $$$ ->
+  #     @h2 'Previewing Markdown Failed'
+  #     @h3 failureMessage if failureMessage?
+  #
+  showLoading: ->
+    @loading = true
+    @html $$$ ->
+      @div class: 'live-preview-spinner', 'Loading\u2026'
+
 
   getTitle: ->
     if @editor?
