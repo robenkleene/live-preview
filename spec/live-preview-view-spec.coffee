@@ -14,7 +14,7 @@ describe "LivePreviewView", ->
       atom.workspace.open("subdir/file.markdown")
 
     runs ->
-      preview = new LivePreviewView({editorId: atom.workspace.getActiveEditor().id})
+      preview = new LivePreviewView(atom.workspace.getActiveEditor().id)
 
   afterEach ->
     preview.destroy()
@@ -50,7 +50,7 @@ describe "LivePreviewView", ->
         atom.workspace.open('new.markdown')
 
       runs ->
-        preview = new LivePreviewView({editorId:atom.workspace.getActiveEditor().id})
+        preview = new LivePreviewView(atom.workspace.getActiveEditor().id)
         expect(preview.getPath()).toBe atom.workspace.getActiveEditor().getPath()
 
         newPreview = atom.deserializers.deserialize(preview.serialize())
