@@ -2,10 +2,15 @@
 
 module.exports =
 class LivePreviewView extends ScrollView
+  atom.deserializers.add(this)
+
+  @deserialize: ({editorId}) ->
+    new LivePreviewView({editorId: editorId})
+
   @content: ->
     @div class: 'live-preview native-key-bindings', tabindex: -1
 
-  constructor: (@editorId) ->
+  constructor: ({@editorId}) ->
     super
     @resolveRenderer()
     @resolveEditor(@editorId)

@@ -14,8 +14,7 @@ describe "LivePreviewView", ->
       atom.workspace.open("subdir/file.markdown")
 
     runs ->
-      console.log "creating preview"
-      preview = new LivePreviewView(atom.workspace.getActiveEditor().id)
+      preview = new LivePreviewView({editorId: atom.workspace.getActiveEditor().id})
 
   afterEach ->
     preview.destroy()
@@ -32,3 +31,27 @@ describe "LivePreviewView", ->
     it "shows an error message when there is an error", ->
       preview.showError("Not a real file")
       expect(preview.text()).toContain "Failed"
+
+  describe "serialization", ->
+    newPreview = null
+
+    afterEach ->
+      newPreview.destroy()
+
+    it "recreates the file when serialized/deserialized", ->
+      console.log preview.serialize()
+      newPreview = atom.deserializers.deserialize(preview.serialize())
+      expect(newPreview.getPath()).toBe preview.getPath()
+
+    it "serializes the editor id when opened for an editor", ->
+      preview.destroy()
+
+      waitsForPromise ->
+        atom.workspace.open('new.markdown')
+
+      runs ->
+        preview = new LivePreviewView({editorId:atom.workspace.getActiveEditor().id})
+        expect(preview.getPath()).toBe atom.workspace.getActiveEditor().getPath()
+
+        newPreview = atom.deserializers.deserialize(preview.serialize())
+        expect(newPreview.getPath()).toBe preview.getPath()

@@ -172,7 +172,6 @@ describe "Live preview package", ->
 
           runs ->
             LivePreviewView::render.reset()
-            console.log "Waiting for render"
             editor.setText("Hey!")
 
           waitsFor ->

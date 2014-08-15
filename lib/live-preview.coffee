@@ -9,12 +9,11 @@ isPreviewView = (object) ->
   previewView ?= require './live-preview-view'
   object instanceof previewView
 
-deserializer =
-  name: 'previewView'
-  deserialize: (state) ->
-    createPreviewView(state) if state.constructor is Object
-atom.deserializers.add(deserializer)
-
+# deserializer =
+#   name: 'previewView'
+#   deserialize: (state) ->
+#     createPreviewView(state) if state.constructor is Object
+# atom.deserializers.add(deserializer)
 
 module.exports =
 class LivePreview
@@ -40,7 +39,7 @@ class LivePreview
         return
 
       if host is 'editor'
-        new createPreviewView(pathname.substring(1))
+        new createPreviewView({editorId: pathname.substring(1)})
 
 
   @toggle: ->
