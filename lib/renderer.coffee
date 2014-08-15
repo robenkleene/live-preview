@@ -1,11 +1,9 @@
 cheerio = require 'cheerio'
 
 exports.toHtml = (text='', callback) ->
-  # process.nextTick is attempt to get promise working, doesn't work yet
-  process.nextTick ->
-    html = "<pre><code>#{text}</code></pre>"
-    html = sanitize(html)
-    callback(null, html)
+  html = "<pre><code>#{text}</code></pre>"
+  html = sanitize(html)
+  callback(null, html)
 
 sanitize = (html) ->
   o = cheerio.load("<div>#{html}</div>")

@@ -15,7 +15,7 @@ describe "LivePreviewView", ->
 
     runs ->
       console.log "creating preview"
-      preview = new LivePreviewView({editorId: atom.workspace.getActiveEditor().id})
+      preview = new LivePreviewView(atom.workspace.getActiveEditor().id)
 
   afterEach ->
     preview.destroy()
@@ -25,8 +25,10 @@ describe "LivePreviewView", ->
       preview.showLoading()
       expect(preview.find('.live-preview-spinner')).toExist()
 
-      waitsForPromise ->
-        preview.render()  # Call render manually because this is normally called external to LivePreviewView
+      preview.render()  # Call render manually because this is normally called external to LivePreviewView
+
+      waitsFor ->
+        LivePreviewView::render.callCount > 0
 
       runs ->
         expect(preview.find("code")).toExist()
