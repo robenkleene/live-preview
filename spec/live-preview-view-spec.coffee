@@ -28,3 +28,7 @@ describe "LivePreviewView", ->
       preview.render()  # Call render manually because this is normally called external to LivePreviewView
 
       expect(preview.find("code")).toExist()
+
+    it "shows an error message when there is an error", ->
+      preview.showError("Not a real file")
+      expect(preview.text()).toContain "Failed"

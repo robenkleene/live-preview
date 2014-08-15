@@ -65,20 +65,17 @@ class LivePreviewView extends ScrollView
   renderText: (text) ->
     @renderer.toHtml text, (error, html) =>
       if error
-        # @showError(error)
+        @showError(error)
       else
-        # @loading = false
         @html(html)
 
-  # showError: (result) ->
-  #   failureMessage = result?.message
-  #
-  #   @html $$$ ->
-  #     @h2 'Previewing Markdown Failed'
-  #     @h3 failureMessage if failureMessage?
-  #
+  showError: (result) ->
+    failureMessage = result?.message
+    @html $$$ ->
+      @h2 'Previewing Failed'
+      @h3 failureMessage if failureMessage?
+
   showLoading: ->
-    @loading = true
     @html $$$ ->
       @div class: 'live-preview-spinner', 'Loading\u2026'
 
