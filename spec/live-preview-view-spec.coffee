@@ -27,8 +27,4 @@ describe "LivePreviewView", ->
 
       preview.render()  # Call render manually because this is normally called external to LivePreviewView
 
-      waitsFor ->
-        LivePreviewView::render.callCount > 0
-
-      runs ->
-        expect(preview.find("code")).toExist()
+      expect(preview.find("code")).toExist()
