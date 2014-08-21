@@ -26,14 +26,14 @@ class LivePreview
         return
 
       return unless protocol is @getProtocol()
+      return unless host is 'editor'
 
       try
         pathname = decodeURI(pathname) if pathname
       catch error
         return
 
-      if host is 'editor'
-        new createPreviewView(pathname.substring(1))
+      new createPreviewView(pathname.substring(1))
 
 
   @toggle: ->
