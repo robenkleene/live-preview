@@ -34,7 +34,7 @@ class LivePreview
     # grammars = atom.config.get('markdown-preview.grammars') ? []
     # return unless editor.getGrammar().scopeName in grammars
 
-    @addPreviewForEditor(editor) unless @removePreviewForEditor(editor)
+    @addPreviewForEditorId(editor.id) unless @removePreviewForEditorId(editor.id)
 
   @editorIdForUri: (uri) =>
     try
@@ -56,8 +56,8 @@ class LivePreview
   @uriForEditorId: (editorId) =>
     "#{@getProtocol()}//editor/#{editorId}"
 
-  @removePreviewForEditor: (editor) ->
-    uri = @uriForEditorId(editor.id)
+  @removePreviewForEditorId: (editorId) ->
+    uri = @uriForEditorId(editorId)
     previewPane = atom.workspace.paneForUri(uri)
     if previewPane?
       previewPane.destroyItem(previewPane.itemForUri(uri))
@@ -65,8 +65,8 @@ class LivePreview
     else
       false
 
-  @addPreviewForEditor: (editor) ->
-    uri = @uriForEditorId(editor.id)
+  @addPreviewForEditorId: (editorId) ->
+    uri = @uriForEditorId(editorId)
     previousActivePane = atom.workspace.getActivePane()
 
     atom.workspace.open(uri, split: 'right', searchAllPanes: true).done (previewView) ->
