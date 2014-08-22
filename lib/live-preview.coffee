@@ -53,13 +53,11 @@ class LivePreview
 
     return pathname.substring(1)
 
-
-
-  @uriForEditor: (editor) =>
-    "#{@getProtocol()}//editor/#{editor.id}"
+  @uriForEditorId: (editorId) =>
+    "#{@getProtocol()}//editor/#{editorId}"
 
   @removePreviewForEditor: (editor) ->
-    uri = @uriForEditor(editor)
+    uri = @uriForEditorId(editor.id)
     previewPane = atom.workspace.paneForUri(uri)
     if previewPane?
       previewPane.destroyItem(previewPane.itemForUri(uri))
@@ -68,7 +66,7 @@ class LivePreview
       false
 
   @addPreviewForEditor: (editor) ->
-    uri = @uriForEditor(editor)
+    uri = @uriForEditorId(editor.id)
     previousActivePane = atom.workspace.getActivePane()
 
     atom.workspace.open(uri, split: 'right', searchAllPanes: true).done (previewView) ->
