@@ -18,23 +18,10 @@ class LivePreview
     atom.workspaceView.command "#{@getPackageName()}:toggle", =>
       @toggle()
 
-    atom.workspace.registerOpener (uriToOpen) =>
-      try
-        {protocol, host, pathname} = url.parse(uriToOpen)
-      catch error
-        console.log error
-        return
-
-      return unless protocol is @getProtocol()
-      return unless host is 'editor'
-
-      try
-        pathname = decodeURI(pathname) if pathname
-      catch error
-        return
-
-      new createPreviewView(pathname.substring(1))
-
+    atom.workspace.registerOpener (uri) =>
+      editorId = @editorIdForUri(uri)
+      if editorId
+        new createPreviewView(editorId)
 
   @toggle: ->
     if isPreviewView(atom.workspace.activePaneItem)
@@ -48,6 +35,25 @@ class LivePreview
     # return unless editor.getGrammar().scopeName in grammars
 
     @addPreviewForEditor(editor) unless @removePreviewForEditor(editor)
+
+  @editorIdForUri: (uri) =>
+    try
+      {protocol, host, pathname} = url.parse(uri)
+    catch error
+      console.error error
+      return
+    return unless protocol is @getProtocol()
+    return unless host is 'editor'
+
+    try
+      pathname = decodeURI(pathname) if pathname
+    catch error
+      console.error error
+      return
+
+    return pathname.substring(1)
+
+
 
   @uriForEditor: (editor) =>
     "#{@getProtocol()}//editor/#{editor.id}"
