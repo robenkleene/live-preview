@@ -39,7 +39,6 @@ describe "LivePreviewView", ->
       newPreview.destroy()
 
     it "recreates the file when serialized/deserialized", ->
-      console.log preview.serialize()
       newPreview = atom.deserializers.deserialize(preview.serialize())
       expect(newPreview.getPath()).toBe preview.getPath()
 
