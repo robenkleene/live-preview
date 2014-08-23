@@ -9,13 +9,4 @@ class LivePreview
     @livePreviewViewManager = new LivePreviewViewManager('live-preview:')
 
     atom.workspaceView.command 'live-preview:toggle', =>
-
-      @livePreviewViewManager.removePreviewIfActive()
-
-      editor = atom.workspace.getActiveEditor()
-      return unless editor?
-
-      # grammars = atom.config.get('markdown-preview.grammars') ? []
-      # return unless editor.getGrammar().scopeName in grammars
-
-      @livePreviewViewManager.togglePreviewForEditorId(editor.id)
+      @livePreviewViewManager.togglePreview()

@@ -95,7 +95,7 @@ class LivePreviewView extends ScrollView
       "Preview"
 
   getIconName: ->
-    "markdown" # TODO Replace with langauges icon
+    "markdown" # TODO Replace with language icon
 
   getPath: ->
     @editor.getPath()
