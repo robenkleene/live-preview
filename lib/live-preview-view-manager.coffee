@@ -42,6 +42,11 @@ class LivePreviewViewManager
   uriForEditorId: (editorId) =>
     "#{@protocol}//editor/#{editorId}"
 
+  removePreviewIfActive: ->
+    if isPreviewView(atom.workspace.activePaneItem)
+      atom.workspace.destroyActivePaneItem()
+      return
+
   removePreviewForEditorId: (editorId) =>
     uri = @uriForEditorId(editorId)
     previewPane = atom.workspace.paneForUri(uri)
