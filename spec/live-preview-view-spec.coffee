@@ -24,15 +24,15 @@ describe "LivePreviewView", ->
 
   describe "::constructor", ->
     it "shows a loading spinner and renders the preview", ->
-      preview.showLoading()
+      preview.renderer.showLoading(preview)
       expect(preview.find('.live-preview-spinner')).toExist()
 
-      preview.render()  # Call render manually because this is normally called external to LivePreviewView
+      preview.render()
 
       expect(preview.find("code")).toExist()
 
     it "shows an error message when there is an error", ->
-      preview.showError("Not a real file")
+      preview.renderer.showError("Not a real file", preview)
       expect(preview.text()).toContain "Failed"
 
   describe "serialization", ->
