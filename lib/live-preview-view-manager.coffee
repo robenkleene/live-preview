@@ -19,7 +19,8 @@ class LivePreviewViewManager
         new createPreviewView(editorId)
 
   togglePreviewForEditorId: (editorId) =>
-    @addPreviewForEditorId(editorId) unless @removePreviewForEditorId(editorId)
+    uri = @uriForEditorId(editorId)
+    @addPreviewForUri(uri) unless @removePreviewForUri(uri)
 
   editorIdForUri: (uri) =>
     try
@@ -47,8 +48,7 @@ class LivePreviewViewManager
       atom.workspace.destroyActivePaneItem()
       return
 
-  removePreviewForEditorId: (editorId) =>
-    uri = @uriForEditorId(editorId)
+  removePreviewForUri: (uri) ->
     previewPane = atom.workspace.paneForUri(uri)
 
     if previewPane?
@@ -57,8 +57,7 @@ class LivePreviewViewManager
     else
       return false
 
-  addPreviewForEditorId: (editorId) =>
-    uri = @uriForEditorId(editorId)
+  addPreviewForUri: (uri) ->
     previousActivePane = atom.workspace.getActivePane()
 
     atom.workspace.open(uri, split: 'right', searchAllPanes: true).done (previewView) ->

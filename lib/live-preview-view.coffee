@@ -84,7 +84,6 @@ class LivePreviewView extends ScrollView
     @html $$$ ->
       @div class: 'live-preview-spinner', 'Loading\u2026'
 
-
   getTitle: ->
     if @editor?
       "#{@editor.getTitle()} Preview"
