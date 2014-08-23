@@ -1,4 +1,4 @@
-{$$$, ScrollView} = require 'atom'
+{ScrollView} = require 'atom'
 UriHelper = require './uri-helper'
 
 module.exports =
@@ -67,26 +67,9 @@ class LivePreviewView extends ScrollView
         changeHandler() unless atom.config.get 'live-preview.liveUpdate'
 
   render: ->
-    @showLoading()
     if @editor?
-      @renderText(@editor.getText())
-
-  renderText: (text) ->
-    @renderer.toHtml text, (error, html) =>
-      if error
-        @showError(error)
-      else
-        @html(html)
-
-  showError: (result) ->
-    failureMessage = result?.message
-    @html $$$ ->
-      @h2 'Previewing Failed'
-      @h3 failureMessage if failureMessage?
-
-  showLoading: ->
-    @html $$$ ->
-      @div class: 'live-preview-spinner', 'Loading\u2026'
+      # TODO Test if there is a running render process then cancel that process and restart another if there is
+      @renderer.render(@editor.getText(), this)
 
   getTitle: ->
     if @editor?

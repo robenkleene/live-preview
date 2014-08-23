@@ -1,36 +1,20 @@
-cheerio = require 'cheerio'
+CodeRenderer = require './code-renderer'
+{$$$} = require 'atom'
 
-exports.toHtml = (text='', callback) ->
-  html = "<pre><code>#{text}</code></pre>"
-  html = sanitize(html)
-  callback(null, html)
+showError = (errorMessage, view) ->
+  view.html $$$ ->
+    @h2 'Preview Failed'
+    @h3 errorMessage if errorMessage?
 
-sanitize = (html) ->
-  o = cheerio.load("<div>#{html}</div>")
-  o('script').remove()
-  attributesToRemove = [
-    'onabort'
-    'onblur'
-    'onchange'
-    'onclick'
-    'ondbclick'
-    'onerror'
-    'onfocus'
-    'onkeydown'
-    'onkeypress'
-    'onkeyup'
-    'onload'
-    'onmousedown'
-    'onmousemove'
-    'onmouseover'
-    'onmouseout'
-    'onmouseup'
-    'onreset'
-    'onresize'
-    'onscroll'
-    'onselect'
-    'onsubmit'
-    'onunload'
-  ]
-  o('*').removeAttr(attribute) for attribute in attributesToRemove
-  o.html()
+showLoading = (view) ->
+  view.html $$$ ->
+    @div class: 'live-preview-spinner', 'Loading\u2026'
+
+exports.render = (text, view) ->
+  showLoading(view)
+  CodeRenderer.toHtml text, (error, result) ->
+    if error
+      errorMessage = error?.message
+      showError(errorMessage, view)
+    else
+      view.html(result)
