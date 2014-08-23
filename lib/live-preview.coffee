@@ -1,5 +1,3 @@
-previewView = null
-
 LivePreviewViewManager = require './live-preview-view-manager'
 
 module.exports =

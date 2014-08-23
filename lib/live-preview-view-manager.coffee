@@ -1,47 +1,26 @@
-url = require 'url'
 previewView = null
+UriHelper = require './uri-helper'
 
-createPreviewView = (state) ->
+createPreviewView = (uri) ->
   previewView ?= require './live-preview-view'
-  new previewView(state)
+  new previewView(uri)
 
 isPreviewView = (object) ->
   previewView ?= require './live-preview-view'
   object instanceof previewView
 
-
 module.exports =
 class LivePreviewViewManager
   constructor: (@protocol) ->
     atom.workspace.registerOpener (uri) =>
-      editorId = @editorIdForUri(uri)
+      editorId = UriHelper.editorIdForUri(@protocol, uri)
       if editorId
-        new createPreviewView(editorId)
+        new createPreviewView(uri)
+
 
   togglePreviewForEditorId: (editorId) =>
-    uri = @uriForEditorId(editorId)
+    uri = UriHelper.uriForEditorId(@protocol, editorId)
     @addPreviewForUri(uri) unless @removePreviewForUri(uri)
-
-  editorIdForUri: (uri) =>
-    try
-      {protocol, host, pathname} = url.parse(uri)
-    catch error
-      console.error error
-      return
-    return unless protocol is @protocol
-    return unless host is 'editor'
-
-    try
-      pathname = decodeURI(pathname) if pathname
-    catch error
-      console.error error
-      return
-
-    return pathname.substring(1)
-
-
-  uriForEditorId: (editorId) =>
-    "#{@protocol}//editor/#{editorId}"
 
   removePreviewIfActive: ->
     if isPreviewView(atom.workspace.activePaneItem)

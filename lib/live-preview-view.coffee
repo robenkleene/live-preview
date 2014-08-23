@@ -1,4 +1,5 @@
 {$$$, ScrollView} = require 'atom'
+UriHelper = require './uri-helper'
 
 module.exports =
 class LivePreviewView extends ScrollView
@@ -7,23 +8,23 @@ class LivePreviewView extends ScrollView
   @content: ->
     @div class: 'live-preview native-key-bindings', tabindex: -1
 
-  constructor: (@editorId) ->
+  constructor: (@uri) ->
     super
     @resolveRenderer()
-    @resolveEditor(@editorId)
+    @resolveEditor()
 
-  @deserialize: ({editorId}) ->
-    new LivePreviewView(editorId)
+  @deserialize: ({uri}) ->
+    new LivePreviewView(uri)
 
   serialize: ->
-    {@editorId, deserializer: @constructor.name}
+    {@uri, deserializer: @constructor.name}
 
   destroy: ->
     @unsubscribe()
 
-  resolveEditor: (editorId) ->
+  resolveEditor: ->
     resolve = =>
-      @editor = @editorForId(editorId)
+      @editor = @editorForUri(@uri)
 
       if @editor?
         @trigger 'title-changed' if @editor?
@@ -40,10 +41,13 @@ class LivePreviewView extends ScrollView
         resolve()
         @render()
 
-  editorForId: (editorId) ->
+  editorForUri: (uri) ->
+    protocol = UriHelper.protocolForUri(@uri)
+    editorId = UriHelper.editorIdForUri(protocol, @uri)
+
     for editor in atom.workspace.getEditors()
       return editor if editor.id?.toString() is editorId.toString()
-    null
+    return null
 
   handleEvents: ->
     @subscribe this, 'core:move-up', => @scrollUp()
@@ -51,7 +55,7 @@ class LivePreviewView extends ScrollView
 
     changeHandler = =>
       @render()
-      pane = atom.workspace.paneForUri(@getUri())
+      pane = atom.workspace.paneForUri(@uri)
       if pane? and pane isnt atom.workspace.getActivePane()
         pane.activateItem(this)
 
@@ -93,11 +97,11 @@ class LivePreviewView extends ScrollView
   getIconName: ->
     "markdown" # TODO Replace with langauges icon
 
-  getUri: ->
-    "live-preview://editor/#{@editorId}"
-
   getPath: ->
     @editor.getPath()
+
+  getUri: ->
+    @uri
 
   resolveRenderer: =>
     @renderer = require './renderer'
