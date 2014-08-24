@@ -12,5 +12,5 @@ class SubclassedView extends LivePreviewView
   # getIconName: ->
   #   "markdown" # TODO Replace with language icon
   #
-  # resolveRenderer: =>
-  #   @renderer = require './renderer'
+  resolveRenderer: =>
+    @renderer = require './test-renderer'
