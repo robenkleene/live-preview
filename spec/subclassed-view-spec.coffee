@@ -26,10 +26,12 @@ describe "SubclassedView", ->
   afterEach ->
     preview.destroy()
 
-  fit "uses the test renderer", ->
+  it "uses the test renderer", ->
     expect(preview.find('.rendered')).toExist()
 
   it "overrides the title", ->
-    
+    title = preview.getTitle()
+    expect(title.indexOf("Subclassed Preview")).toBeGreaterThan(0)
 
   it "overrides the icon", ->
+    expect(preview.getIconName()).toBe("coffee")
