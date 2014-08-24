@@ -9,8 +9,5 @@ class SubclassedView extends LivePreviewView
     else
       "Subclassed Preview"
 
-  getIconName: ->
-    "coffee"
-
   resolveRenderer: =>
     @renderer = require './test-renderer'

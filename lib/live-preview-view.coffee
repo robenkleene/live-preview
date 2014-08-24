@@ -83,8 +83,5 @@ class LivePreviewView extends ScrollView
     else
       "Preview"
 
-  getIconName: ->
-    "markdown" # TODO Replace with language icon
-
   resolveRenderer: =>
     @renderer = require './renderer'

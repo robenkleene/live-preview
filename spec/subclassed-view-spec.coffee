@@ -32,6 +32,3 @@ describe "SubclassedView", ->
   it "overrides the title", ->
     title = preview.getTitle()
     expect(title.indexOf("Subclassed Preview")).toBeGreaterThan(0)
-
-  it "overrides the icon", ->
-    expect(preview.getIconName()).toBe("coffee")
