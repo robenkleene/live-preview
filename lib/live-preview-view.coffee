@@ -71,6 +71,12 @@ class LivePreviewView extends ScrollView
       # TODO Test if there is a running render process then cancel that process and restart another if there is
       @renderer.render(@editor.getText(), this)
 
+  getPath: ->
+    @editor.getPath()
+
+  getUri: ->
+    @uri
+
   getTitle: ->
     if @editor?
       "#{@editor.getTitle()} Preview"
@@ -79,12 +85,6 @@ class LivePreviewView extends ScrollView
 
   getIconName: ->
     "markdown" # TODO Replace with language icon
-
-  getPath: ->
-    @editor.getPath()
-
-  getUri: ->
-    @uri
 
   resolveRenderer: =>
     @renderer = require './renderer'
