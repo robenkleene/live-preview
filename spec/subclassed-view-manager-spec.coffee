@@ -4,7 +4,6 @@ SubclassedView = require './fixtures/subclassed-view'
 
 describe "SubclassedViewManager", ->
   viewManager = null
-  previewPane = null
 
   beforeEach ->
     viewManager = new SubclassedViewManager("test-protocol:")
@@ -27,9 +26,9 @@ describe "SubclassedViewManager", ->
     runs ->
       expect(atom.workspaceView.getPaneViews()).toHaveLength 2
       [editorPane, previewPane] = atom.workspaceView.getPaneViews()
-      expect(previewPane.getActiveItem()).toBeInstanceOf(SubclassedView)
-
-  describe "the preview pane", ->
-    it "is a subclass of SubclassedView", ->
-
-    it "it has the right protocol", ->
+      subclassedView = previewPane.getActiveItem()
+      expect(subclassedView).toBeInstanceOf(SubclassedView)
+      uri = subclassedView.getUri()
+      url = require 'url'
+      {protocol} = url.parse(uri)
+      expect(protocol).toBe("test-protocol:")
