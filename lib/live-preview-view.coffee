@@ -73,6 +73,7 @@ class LivePreviewView extends ScrollView
 
   getPath: ->
     @editor.getPath()
+    @editor?.getPath()
 
   getUri: ->
     @uri
