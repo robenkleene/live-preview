@@ -1,13 +1,5 @@
 LivePreviewViewManager = require './live-preview-view-manager'
-
-class LivePreviewViewFactory
-  @createPreviewView: (uri) =>
-    @PreviewView ?= require './live-preview-view'
-    new @PreviewView(uri)
-
-  @isPreviewView: (object) ->
-    @PreviewView ?= require './live-preview-view'
-    object instanceof @PreviewView
+LivePreviewViewFactory = require './live-preview-view-factory'
 
 deserializer =
   name: 'LivePreviewView'
