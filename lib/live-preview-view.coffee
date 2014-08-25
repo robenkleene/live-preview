@@ -72,7 +72,6 @@ class LivePreviewView extends ScrollView
       @renderer.render(@editor.getText(), this)
 
   getPath: ->
-    @editor.getPath()
     @editor?.getPath()
 
   getUri: ->
