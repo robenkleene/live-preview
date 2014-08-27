@@ -8,7 +8,7 @@ class LivePreviewViewManager
     atom.workspace.registerOpener (uri) =>
       editorId = UriHelper.editorIdForUri(@protocol, uri)
       if editorId?
-        new @factory.createPreviewView(uri)
+        new @createPreviewView(uri)
 
   togglePreview: =>
     if @removePreviewIfActive()
@@ -27,12 +27,23 @@ class LivePreviewViewManager
     else
       previousActivePane = atom.workspace.getActivePane()
       atom.workspace.open(uri, split: 'right', searchAllPanes: true).done (previewView) =>
-        if @factory.isPreviewView(previewView)
+        if @isPreviewView(previewView)
           previewView.render()
           previousActivePane.activate()
 
   removePreviewIfActive: ->
-    if @factory.isPreviewView(atom.workspace.activePaneItem)
+    if @isPreviewView(atom.workspace.activePaneItem)
       atom.workspace.destroyActivePaneItem()
       return true
     return false
+
+  createPreviewView: (uri) =>
+    @resolvePreviewView() unless @PreviewView?
+    new @PreviewView(uri)
+
+  isPreviewView: (object) ->
+    @resolvePreviewView() unless @PreviewView?
+    object instanceof @PreviewView
+
+  resolvePreviewView: =>
+    @PreviewView ?= @factory.getPreviewView()

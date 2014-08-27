@@ -1,15 +1,15 @@
 {WorkspaceView} = require 'atom'
-LivePreviewView = require '../lib/live-preview-view'
+CodePreviewView = require '../lib/code-preview/code-preview-view'
 UriHelper = require '../lib/uri-helper'
 
-describe "LivePreviewView", ->
+describe "CodePreviewView", ->
   [file, preview] = []
 
   beforeEach ->
     atom.workspaceView = new WorkspaceView
     atom.workspace = atom.workspaceView.model
 
-    spyOn(LivePreviewView.prototype, 'render').andCallThrough()
+    spyOn(CodePreviewView.prototype, 'render').andCallThrough()
 
     waitsForPromise ->
       atom.workspace.open("subdir/file.markdown")
@@ -17,7 +17,7 @@ describe "LivePreviewView", ->
     runs ->
       editorId = atom.workspace.getActiveEditor().id
       uri = UriHelper.uriForEditorId("test-protocol:", editorId)
-      preview = new LivePreviewView(uri)
+      preview = new CodePreviewView(uri)
 
   afterEach ->
     preview.destroy()
@@ -54,7 +54,7 @@ describe "LivePreviewView", ->
       runs ->
         editorId = atom.workspace.getActiveEditor().id
         uri = UriHelper.uriForEditorId("test-protocol:", editorId)
-        preview = new LivePreviewView(uri)
+        preview = new CodePreviewView(uri)
         expect(preview.getPath()).toBe atom.workspace.getActiveEditor().getPath()
 
         newPreview = atom.deserializers.deserialize(preview.serialize())

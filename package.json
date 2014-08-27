@@ -1,6 +1,6 @@
 {
-  "name": "live-preview",
-  "main": "./lib/live-preview",
+  "name": "code-preview",
+  "main": "./lib/code-preview/code-preview",
   "version": "0.0.0",
   "description": "A short description of your package",
   "repository": "https://github.com/atom/live-preview",

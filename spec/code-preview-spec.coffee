@@ -3,9 +3,13 @@ path = require 'path'
 temp = require 'temp'
 wrench = require 'wrench'
 fs = require 'fs-plus'
-LivePreviewView = require '../lib/live-preview-view'
+CodePreviewView = require '../lib/code-preview/code-preview-view'
 
-describe "Live preview package", ->
+# Configuration
+PACKAGE = 'code-preview'
+COMMAND = "#{PACKAGE}:toggle"
+
+describe "Code preview package", ->
   beforeEach ->
     fixturesPath = path.join(__dirname, 'fixtures')
     tempPath = temp.mkdirSync('atom')
@@ -15,10 +19,11 @@ describe "Live preview package", ->
 
     atom.workspaceView = new WorkspaceView
     atom.workspace = atom.workspaceView.model
-    spyOn(LivePreviewView.prototype, 'render').andCallThrough()
+    atom.config.set "#{PACKAGE}.liveUpdate", true
+    spyOn(CodePreviewView.prototype, 'render').andCallThrough()
 
     waitsForPromise ->
-      atom.packages.activatePackage("live-preview")
+      atom.packages.activatePackage(PACKAGE)
 
   describe "when a preview has not been created for the file", ->
     beforeEach ->
@@ -29,17 +34,17 @@ describe "Live preview package", ->
         atom.workspace.open("subdir/file.markdown")
 
       runs ->
-        atom.workspaceView.getActiveView().trigger 'live-preview:toggle'
+        atom.workspaceView.getActiveView().trigger COMMAND
 
       waitsFor ->
-        LivePreviewView::render.callCount > 0
+        CodePreviewView::render.callCount > 0
 
       runs ->
         expect(atom.workspaceView.getPaneViews()).toHaveLength 2
         [editorPane, previewPane] = atom.workspaceView.getPaneViews()
         expect(editorPane.items).toHaveLength 1
         preview = previewPane.getActiveItem()
-        expect(preview).toBeInstanceOf(LivePreviewView)
+        expect(preview).toBeInstanceOf(CodePreviewView)
         expect(preview.getPath()).toBe atom.workspace.getActivePaneItem().getPath()
         expect(editorPane).toHaveFocus()
 
@@ -49,10 +54,10 @@ describe "Live preview package", ->
           atom.workspace.open("new.markdown")
 
         runs ->
-          atom.workspaceView.getActiveView().trigger 'live-preview:toggle'
+          atom.workspaceView.getActiveView().trigger COMMAND
 
         waitsFor ->
-          LivePreviewView::render.callCount > 0
+          CodePreviewView::render.callCount > 0
 
         runs ->
           expect(atom.workspaceView.getPaneViews()).toHaveLength 2
@@ -60,7 +65,7 @@ describe "Live preview package", ->
 
           expect(editorPane.items).toHaveLength 1
           preview = previewPane.getActiveItem()
-          expect(preview).toBeInstanceOf(LivePreviewView)
+          expect(preview).toBeInstanceOf(CodePreviewView)
           expect(preview.getPath()).toBe atom.workspace.getActivePaneItem().getPath()
           expect(editorPane).toHaveFocus()
 
@@ -70,10 +75,10 @@ describe "Live preview package", ->
           atom.workspace.open("")
 
         runs ->
-          atom.workspaceView.getActiveView().trigger 'live-preview:toggle'
+          atom.workspaceView.getActiveView().trigger COMMAND
 
         waitsFor ->
-          LivePreviewView::render.callCount > 0
+          CodePreviewView::render.callCount > 0
 
         runs ->
           expect(atom.workspaceView.getPaneViews()).toHaveLength 2
@@ -81,7 +86,7 @@ describe "Live preview package", ->
 
           expect(editorPane.items).toHaveLength 1
           preview = previewPane.getActiveItem()
-          expect(preview).toBeInstanceOf(LivePreviewView)
+          expect(preview).toBeInstanceOf(CodePreviewView)
           expect(preview.getPath()).toBe atom.workspace.getActivePaneItem().getPath()
           expect(editorPane).toHaveFocus()
 
@@ -91,10 +96,10 @@ describe "Live preview package", ->
           atom.workspace.open("subdir/file with space.md")
 
         runs ->
-          atom.workspaceView.getActiveView().trigger 'live-preview:toggle'
+          atom.workspaceView.getActiveView().trigger COMMAND
 
         waitsFor ->
-          LivePreviewView::render.callCount > 0
+          CodePreviewView::render.callCount > 0
 
         runs ->
           expect(atom.workspaceView.getPaneViews()).toHaveLength 2
@@ -102,7 +107,7 @@ describe "Live preview package", ->
 
           expect(editorPane.items).toHaveLength 1
           preview = previewPane.getActiveItem()
-          expect(preview).toBeInstanceOf(LivePreviewView)
+          expect(preview).toBeInstanceOf(CodePreviewView)
           expect(preview.getPath()).toBe atom.workspace.getActivePaneItem().getPath()
           expect(editorPane).toHaveFocus()
 
@@ -112,10 +117,10 @@ describe "Live preview package", ->
           atom.workspace.open("subdir/áccéntéd.md")
 
         runs ->
-          atom.workspaceView.getActiveView().trigger 'live-preview:toggle'
+          atom.workspaceView.getActiveView().trigger COMMAND
 
         waitsFor ->
-          LivePreviewView::render.callCount > 0
+          CodePreviewView::render.callCount > 0
 
         runs ->
           expect(atom.workspaceView.getPaneViews()).toHaveLength 2
@@ -123,7 +128,7 @@ describe "Live preview package", ->
 
           expect(editorPane.items).toHaveLength 1
           preview = previewPane.getActiveItem()
-          expect(preview).toBeInstanceOf(LivePreviewView)
+          expect(preview).toBeInstanceOf(CodePreviewView)
           expect(preview.getPath()).toBe atom.workspace.getActivePaneItem().getPath()
           expect(editorPane).toHaveFocus()
 
@@ -137,18 +142,18 @@ describe "Live preview package", ->
         atom.workspace.open("subdir/file.markdown")
 
       runs ->
-        atom.workspaceView.getActiveView().trigger 'live-preview:toggle'
+        atom.workspaceView.getActiveView().trigger COMMAND
 
       waitsFor ->
-        LivePreviewView::render.callCount > 0
+        CodePreviewView::render.callCount > 0
 
       runs ->
         [editorPane, previewPane] = atom.workspaceView.getPaneViews()
         preview = previewPane.getActiveItem()
-        LivePreviewView::render.reset()
+        CodePreviewView::render.reset()
 
     it "closes the existing preview when toggle is triggered a second time on the editor", ->
-      atom.workspaceView.getActiveView().trigger 'live-preview:toggle'
+      atom.workspaceView.getActiveView().trigger COMMAND
 
       [editorPane, previewPane] = atom.workspaceView.getPaneViews()
       expect(editorPane).toHaveFocus()
@@ -156,7 +161,7 @@ describe "Live preview package", ->
 
     it "closes the existing preview when toggle is triggered on it and it has focus", ->
       previewPane.focus()
-      atom.workspaceView.getActiveView().trigger 'live-preview:toggle'
+      atom.workspaceView.getActiveView().trigger COMMAND
 
       [editorPane, previewPane] = atom.workspaceView.getPaneViews()
       expect(previewPane?.activeItem).toBeUndefined()
@@ -171,11 +176,11 @@ describe "Live preview package", ->
             atom.workspace.open()
 
           runs ->
-            LivePreviewView::render.reset()
+            CodePreviewView::render.reset()
             editor.setText("Hey!")
 
           waitsFor ->
-            LivePreviewView::render.callCount > 0
+            CodePreviewView::render.callCount > 0
 
           runs ->
             expect(previewPane).toHaveFocus()
@@ -190,12 +195,12 @@ describe "Live preview package", ->
             atom.workspace.open()
 
           runs ->
-            LivePreviewView::render.reset()
+            CodePreviewView::render.reset()
             editorPane.focus()
             editor.setText("Hey!")
 
           waitsFor ->
-            LivePreviewView::render.callCount > 0
+            CodePreviewView::render.callCount > 0
 
           runs ->
             expect(editorPane).toHaveFocus()
@@ -203,8 +208,7 @@ describe "Live preview package", ->
 
       describe "when the liveUpdate config is set to false", ->
         it "only re-renders the markdown when the editor is saved, not when the contents are modified", ->
-          atom.config.set 'live-preview.liveUpdate', false
-
+          atom.config.set "#{PACKAGE}.liveUpdate", false
           contentsModifiedHandler = jasmine.createSpy('contents-modified')
           atom.workspace.getActiveEditor().getBuffer().on 'contents-modified', contentsModifiedHandler
           atom.workspace.getActiveEditor().setText('ch ch changes')
@@ -213,9 +217,9 @@ describe "Live preview package", ->
             contentsModifiedHandler.callCount > 0
 
           runs ->
-            expect(LivePreviewView::render.callCount).toBe 0
+            expect(CodePreviewView::render.callCount).toBe 0
             atom.workspace.getActiveEditor().save()
-            expect(LivePreviewView::render.callCount).toBe 1
+            expect(CodePreviewView::render.callCount).toBe 1
 
   describe "when the editor's path changes", ->
     it "updates the preview's title", ->
@@ -225,15 +229,15 @@ describe "Live preview package", ->
         atom.workspace.open("subdir/file.markdown")
 
       runs ->
-        atom.workspaceView.getActiveView().trigger 'live-preview:toggle'
+        atom.workspaceView.getActiveView().trigger COMMAND
 
       waitsFor ->
-        LivePreviewView::render.callCount > 0
+        CodePreviewView::render.callCount > 0
 
       runs ->
         [editorPane, previewPane] = atom.workspaceView.getPaneViews()
         preview = previewPane.getActiveItem()
-        expect(preview.getTitle()).toBe 'file.markdown Preview'
+        expect(preview.getTitle()).toBe 'file.markdown Code Preview'
 
         titleChangedCallback.reset()
         preview.one('title-changed', titleChangedCallback)
@@ -249,10 +253,10 @@ describe "Live preview package", ->
         atom.workspace.open("subdir/evil.md")
 
       runs ->
-        atom.workspaceView.getActiveView().trigger 'live-preview:toggle'
+        atom.workspaceView.getActiveView().trigger COMMAND
 
       waitsFor ->
-        LivePreviewView::render.callCount > 0
+        CodePreviewView::render.callCount > 0
 
       runs ->
         [editorPane, previewPane] = atom.workspaceView.getPaneViews()
@@ -272,10 +276,10 @@ describe "Live preview package", ->
         atom.workspace.open("subdir/html-tag.md")
 
       runs ->
-        atom.workspaceView.getActiveView().trigger 'live-preview:toggle'
+        atom.workspaceView.getActiveView().trigger COMMAND
 
       waitsFor ->
-        LivePreviewView::render.callCount > 0
+        CodePreviewView::render.callCount > 0
 
       runs ->
         [editorPane, previewPane] = atom.workspaceView.getPaneViews()

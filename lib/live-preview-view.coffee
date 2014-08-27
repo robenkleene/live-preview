@@ -56,16 +56,16 @@ class LivePreviewView extends ScrollView
         pane.activateItem(this)
 
     if @editor?
-      @subscribe @editor.getBuffer(), 'contents-modified', ->
-        changeHandler() if atom.config.get 'live-preview.liveUpdate'
+      @subscribe @editor.getBuffer(), 'contents-modified', =>
+        changeHandler() if @getLiveUpdateConfig()
       @subscribe @editor, 'path-changed', => @trigger 'title-changed'
-      @subscribe @editor.getBuffer(), 'reloaded saved', ->
-        changeHandler() unless atom.config.get 'live-preview.liveUpdate'
+      @subscribe @editor.getBuffer(), 'reloaded saved', =>
+        changeHandler() unless @getLiveUpdateConfig()
 
   render: ->
     if @editor?
-      # TODO Test if there is a running render process then cancel that process and restart another if there is
-      @renderer.render(@editor.getText(), this)
+      # TODO Test if there is a running render process and handle?
+      @renderer?.render(@editor.getText(), this)
 
   getPath: ->
     @editor?.getPath()
@@ -73,11 +73,14 @@ class LivePreviewView extends ScrollView
   getUri: ->
     @uri
 
+  getLiveUpdateConfig: ->
+    console.warn "Subclasses should override"
+
   getTitle: ->
     if @editor?
       "#{@editor.getTitle()} Preview"
     else
       "Preview"
 
-  resolveRenderer: =>
-    @renderer = require './renderer'
+  resolveRenderer: ->
+    console.warn "Subclasses should override"
