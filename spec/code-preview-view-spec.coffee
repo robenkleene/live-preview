@@ -3,7 +3,7 @@ CodePreviewView = require '../lib/code-preview/code-preview-view'
 UriHelper = require '../lib/uri-helper'
 
 describe "CodePreviewView", ->
-  [file, preview] = []
+  preview = null
 
   beforeEach ->
     atom.workspaceView = new WorkspaceView
